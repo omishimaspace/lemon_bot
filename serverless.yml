@@ -10,8 +10,8 @@
 #    docs.serverless.com
 #
 # Happy Coding!
-frameworkVersion: "1.32.0"
-service: zuborash
+frameworkVersion: "1.38.0"
+service: lemon_bot
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -46,7 +46,7 @@ custom:
   profiles:
     dev: ryunjpn
     prod: ryunjpn
-    staging: ryunjpn  
+    staging: ryunjpn
   enable_cron_jobs:
     dev: false
     prod: true
@@ -62,22 +62,22 @@ package:
     - '**/*'
 
 functions:
-  #Receive webhook from LINE 
+  #Receive webhook from LINE
   webhook:
     handler: src/webhook.handler
-    name: zuborash-webhook-${self:provider.stage}
+    name: lemon-webhook-${self:provider.stage}
     description: webhook from LINE
     runtime: nodejs8.10
     memorySize: 256
     timeout: 30
-    role: ${self:custom.config.LAMBDA_BASIC_ROLE} 
-    environment: 
+    role: ${self:custom.config.LAMBDA_BASIC_ROLE}
+    environment:
       CHANNEL_ACCES_TOKEN: ${self:custom.config.CHANNEL_ACCES_TOKEN}
     tags:
-      project: 'zubora-line'
+      project: 'lemon-line'
       service: ${self:service}
       part: webhook
-      runtime: node.js 
+      runtime: node.js
     package:
       include:
           - src/webhook.js
@@ -91,7 +91,7 @@ functions:
   #Add main menu
   main_menu:
     handler: src/mainMenu.handler
-    name: zuborash-main_menu-${self:provider.stage}
+    name: lemon-main_menu-${self:provider.stage}
     description: Add main menu to LINE
     runtime: nodejs8.10
     memorySize: 256
@@ -100,7 +100,7 @@ functions:
     environment: 
       CHANNEL_ACCES_TOKEN: ${self:custom.config.CHANNEL_ACCES_TOKEN}
     tags:
-      project: 'zubora-line'
+      project: 'lemon-line'
       service: ${self:service}
       part: define
       runtime: node.js 

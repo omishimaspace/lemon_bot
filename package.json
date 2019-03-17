@@ -1,11 +1,11 @@
 {
-  "name": "zuborash-bot",
+  "name": "lemon-bot",
   "version": "1.0.0",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "@m_ando_japan",
+  "author": "@macha3162",
   "license": "MIT",
   "dependencies": {
     "@line/bot-sdk": "^6.4.0",
