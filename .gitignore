@@ -1,0 +1,12 @@
+# Framework Files
+#
+node_modules
+.serverless
+src/secrets
+
+# secrets
+.env
+
+# MISC
+*/.DS_Store
+*/*.psd
