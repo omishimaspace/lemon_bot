@@ -213,25 +213,10 @@ exports.handler = (event, context, callback) => {
       let state = await getState(lineEvent.source.userId);
       if (state) {
         console.log('Current state is: ' + JSON.stringify(state));
-        if (state.Item.scenario) {
-          if (state.Item.scenario === scenarioIdMind) {
-            let arrayIndex = Math.floor(Math.random() * arrayData.length);
-            answer = msg[arrayIndex];
-          } else {
-            let number = lineEvent.message.text * 1;
-            if (number > 0) {
-              answer = {
-                type: 'text',
-                text: '探しています',
-              };
-            } else {
-              answer = {
-                type: 'text',
-                text: '数字で入力してください',
-              };
-            }
-          }
-        }
+        answer = {
+          type: 'text',
+          text: '探しています',
+        };
       }
       if (answer) {
         console.log(lineEvent.replyToken);
