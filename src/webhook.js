@@ -33,18 +33,19 @@ const questions = {
       text: 'れもんの気持ちを教えて',
     }
   },
-  category: {
+  tobishima: {
     scenario: scenarioIdTobishimaNow,
     message: {
       type: 'text',
       text: 'いまのとびしまを見せて',
     }
   },
-  times: {
+  drone: {
     scenario: scenarioIdDrone,
     message: {
-      type: 'text',
-      text: 'きょうのドローン映像',
+      type: 'video',
+      originalContentUrl: 'https://www.youtube.com/watch?v=d3XsUTC9LO4&feature=youtu.be&fbclid=IwAR2upsb-LguxnPX0Wf3yYm68ESgP17vHUf3TOiVrMpe2jaVDpuo27BIkEwo',
+      previewImageUrl: ''
     }
   },
 }
@@ -56,9 +57,9 @@ const setState = (params) => {
   }
   if (params.scenario) { item['scenario'] = params.scenario; }
   if (params.menuId) { item['menuId'] = params.menuId; }
-  if (params.food) { item['food'] = params.food; }
-  if (params.category) { item['category'] = params.category; }
-  if (params.times) { item['times'] = params.times; }
+  if (params.mind) { item['mind'] = params.mind; }
+  if (params.tobishima) { item['tobishima'] = params.tobishima; }
+  if (params.drone) { item['drone'] = params.drone; }
 
   let payload = {
     TableName: tableName,
@@ -120,9 +121,9 @@ const setMenuOff = (userId) => {
 
 const search = async (params) => {
   let url = chefsUrl + '?';
-  url += (params && params.food) ? 'food=' + encodeURIComponent(params.food) : '';
-  url += (params && params.category) ? 'category=' + params.category : '';
-  url += (params && params.times) ? 'times=' + params.times : '';
+  url += (params && params.mind) ? 'mind=' + encodeURIComponent(params.mind) : '';
+  url += (params && params.tobishima) ? 'tobishima=' + params.tobishima : '';
+  url += (params && params.drone) ? 'drone=' + params.drone : '';
 
   const response = await axios.get(url);
   if (response.status !== 200) {
@@ -187,12 +188,12 @@ exports.handler = (event, context, callback) => {
     let question = null;
     let answer = null;
     if (lineEvent.type === 'postback' && lineEvent.postback && lineEvent.postback.data) {
-      if (lineEvent.postback.data === 'food') {
-        question = questions.food;
-      } else if (lineEvent.postback.data === 'category') {
-        question = questions.category;
-      } else if (lineEvent.postback.data === 'times') {
-        question = questions.times;
+      if (lineEvent.postback.data === 'mind') {
+        question = questions.mind;
+      } else if (lineEvent.postback.data === 'tobishima') {
+        question = questions.tobishima;
+      } else if (lineEvent.postback.data === 'drone') {
+        question = questions.drone;
       }
       if (question) {
         console.log(lineEvent.replyToken);
@@ -213,10 +214,25 @@ exports.handler = (event, context, callback) => {
       let state = await getState(lineEvent.source.userId);
       if (state) {
         console.log('Current state is: ' + JSON.stringify(state));
-        answer = {
-          type: 'text',
-          text: '探しています',
-        };
+        if (state.Item.scenario) {
+          if (state.Item.scenario === scenarioIdMind) {
+            let arrayIndex = Math.floor(Math.random() * arrayData.length);
+            answer = msg[arrayIndex];
+          } else {
+            let number = lineEvent.message.text * 1;
+            if (number > 0) {
+              answer = {
+                type: 'text',
+                text: '探しています',
+              };
+            } else {
+              answer = {
+                type: 'text',
+                text: '数字で入力してください',
+              };
+            }
+          }
+        }
       }
       if (answer) {
         console.log(lineEvent.replyToken);
