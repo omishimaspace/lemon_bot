@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 frameworkVersion: "1.38.0"
-service: lemon_bot
+service: lemon-bot
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -44,9 +44,9 @@ resources:
 custom:
   config: ${file(src/secrets/serverless.config.${self:provider.stage}.yml)}
   profiles:
-    dev: ryunjpn
-    prod: ryunjpn
-    staging: ryunjpn
+    dev: tobishima-dev
+    prod: tobishima-dev
+    staging: tobishima-dev
   enable_cron_jobs:
     dev: false
     prod: true
