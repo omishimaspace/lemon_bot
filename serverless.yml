@@ -1,0 +1,111 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+frameworkVersion: "1.32.0"
+service: zuborash
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: ${opt:stage, 'dev'}
+  profile: ${self:custom.profiles.${self:provider.stage}}
+  region: ${opt:region, 'ap-northeast-1'}
+  versionFunctions: false # Optional function versioning
+
+resources:  
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: line-context
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+custom:
+  config: ${file(src/secrets/serverless.config.${self:provider.stage}.yml)}
+  profiles:
+    dev: ryunjpn
+    prod: ryunjpn
+    staging: ryunjpn  
+  enable_cron_jobs:
+    dev: false
+    prod: true
+    staging: false
+
+plugins: 
+  - serverless-plugin-include-dependencies
+
+# you can add packaging information here
+package:
+ individually: true
+ exclude:
+    - '**/*'
+
+functions:
+  #Receive webhook from LINE 
+  webhook:
+    handler: src/webhook.handler
+    name: zuborash-webhook-${self:provider.stage}
+    description: webhook from LINE
+    runtime: nodejs8.10
+    memorySize: 256
+    timeout: 30
+    role: ${self:custom.config.LAMBDA_BASIC_ROLE} 
+    environment: 
+      CHANNEL_ACCES_TOKEN: ${self:custom.config.CHANNEL_ACCES_TOKEN}
+    tags:
+      project: 'zubora-line'
+      service: ${self:service}
+      part: webhook
+      runtime: node.js 
+    package:
+      include:
+          - src/webhook.js
+          - lib/**
+    events:
+      - http:
+          path: webhook
+          method: post
+          cors: true
+
+  #Add main menu
+  main_menu:
+    handler: src/mainMenu.handler
+    name: zuborash-main_menu-${self:provider.stage}
+    description: Add main menu to LINE
+    runtime: nodejs8.10
+    memorySize: 256
+    timeout: 30
+    role: ${self:custom.config.LAMBDA_BASIC_ROLE} 
+    environment: 
+      CHANNEL_ACCES_TOKEN: ${self:custom.config.CHANNEL_ACCES_TOKEN}
+    tags:
+      project: 'zubora-line'
+      service: ${self:service}
+      part: define
+      runtime: node.js 
+    package:
+      include:
+          - src/mainMenu.js
+          - designs/line_menu.png
+          - lib/**

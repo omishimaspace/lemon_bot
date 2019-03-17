@@ -1,0 +1,18 @@
+{
+  "name": "zuborash-bot",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "@m_ando_japan",
+  "license": "MIT",
+  "dependencies": {
+    "@line/bot-sdk": "^6.4.0",
+    "axios": "^0.18.0"
+  },
+  "devDependencies": {
+    "dotenv": "^6.1.0",
+    "serverless-plugin-include-dependencies": "^3.0.0"
+  }
+}
