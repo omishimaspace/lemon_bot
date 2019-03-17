@@ -23,8 +23,8 @@ exports.handler = async (event, context, callback) => {
       height: 1686
     },
     selected: true,
-    name: 'ズボラメニュー',
-    chatBarText: 'タップしてズボラしよう！',
+    name: 'れもんのきもち',
+    chatBarText: 'タップしてしてみよう！',
     areas: [
       {
         bounds: {
@@ -33,7 +33,7 @@ exports.handler = async (event, context, callback) => {
         },
         action: {
           type: 'postback',
-          data: 'food'
+          data: 'mind'
         }
       },
       {
@@ -43,7 +43,7 @@ exports.handler = async (event, context, callback) => {
         },
         action: {
           type: 'postback',
-          data: 'category'
+          data: 'tobishima'
         }
       },
       {
@@ -53,7 +53,7 @@ exports.handler = async (event, context, callback) => {
         },
         action: {
           type: 'postback',
-          data: 'times'
+          data: 'drone'
         }
       },
     ]

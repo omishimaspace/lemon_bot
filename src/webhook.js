@@ -7,35 +7,44 @@ const channelAccessToken = process.env.CHANNEL_ACCES_TOKEN;
 const lineClient = new line.Client({channelAccessToken: channelAccessToken});
 const docClient = new aws.DynamoDB.DocumentClient({region: 'ap-northeast-1'});
 
-const scenarioIdFood = 1;
-const scenarioIdCategory = 2;
-const scenarioIdTimes = 3;
+const scenarioIdMind = 1;
+const scenarioIdTobishimaNow = 2;
+const scenarioIdDrone = 3;
 
 const tableName = 'line-context';
 
 const lineUserUrl = 'https://api.line.me/v2/bot/user'
 const chefsUrl = 'https://zubora.herokuapp.com/api/v1/chefs'
 
+const msg = [
+  'おなかすいたーーー！！',
+  'ねむい。。。',
+  'うふふ',
+  '元気だよ',
+  'あっ！',
+  'んーー',
+];
+
 const questions = {
   food: {
-    scenario: scenarioIdFood,
+    scenario: scenarioIdMind,
     message: {
       type: 'text',
-      text: '使う食材を教えてください',
+      text: 'れもんの気持ちを教えて',
     }
   },
   category: {
-    scenario: scenarioIdCategory,
+    scenario: scenarioIdTobishimaNow,
     message: {
       type: 'text',
-      text: '料理のジャンルを教えてください',
+      text: 'いまのとびしまを見せて',
     }
   },
   times: {
-    scenario: scenarioIdTimes,
+    scenario: scenarioIdDrone,
     message: {
       type: 'text',
-      text: 'どのくらい時間をかけたいですか？',
+      text: 'きょうのドローン映像',
     }
   },
 }
@@ -205,12 +214,9 @@ exports.handler = (event, context, callback) => {
       if (state) {
         console.log('Current state is: ' + JSON.stringify(state));
         if (state.Item.scenario) {
-          if (state.Item.scenario === scenarioIdFood) {
-            state.Item.food = lineEvent.message.text;
-            await setState(state.Item);
-            let result = await search({food: state.Item.food});
-            console.log(result);
-            answer = getAnswer(result);
+          if (state.Item.scenario === scenarioIdMind) {
+            let arrayIndex = Math.floor(Math.random() * arrayData.length);
+            answer = msg[arrayIndex];
           } else {
             let number = lineEvent.message.text * 1;
             if (number > 0) {
