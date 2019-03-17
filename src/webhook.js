@@ -19,14 +19,15 @@ const chefsUrl = 'https://zubora.herokuapp.com/api/v1/chefs'
 const msg = [
   'おなかすいたーーー！！',
   'ねむい。。。',
-  'うふふ',
+  '今日はすごくいい天気だ',
   '元気だよ',
   'あっ！',
   'んーー',
+  '皮も食べられるよ！'
 ];
 
 const questions = {
-  food: {
+  mind: {
     scenario: scenarioIdMind,
     message: {
       type: 'text',
@@ -36,16 +37,17 @@ const questions = {
   tobishima: {
     scenario: scenarioIdTobishimaNow,
     message: {
-      type: 'text',
-      text: 'いまのとびしまを見せて',
+      type: 'image',
+      originalContentUrl: 'https://s3-ap-northeast-1.amazonaws.com/lemon-bot-dev-serverlessdeploymentbucket-1x1vf204bz8kb/public/chart.jpg',
+      previewImageUrl: 'https://s3-ap-northeast-1.amazonaws.com/lemon-bot-dev-serverlessdeploymentbucket-1x1vf204bz8kb/public/chart.jpg',
     }
   },
   drone: {
     scenario: scenarioIdDrone,
     message: {
       type: 'video',
-      originalContentUrl: 'https://www.youtube.com/watch?v=d3XsUTC9LO4&feature=youtu.be&fbclid=IwAR2upsb-LguxnPX0Wf3yYm68ESgP17vHUf3TOiVrMpe2jaVDpuo27BIkEwo',
-      previewImageUrl: ''
+      originalContentUrl: 'https://s3-ap-northeast-1.amazonaws.com/lemon-bot-dev-serverlessdeploymentbucket-1x1vf204bz8kb/public/upload_movie.mp4',
+      previewImageUrl: 'https://s3-ap-northeast-1.amazonaws.com/lemon-bot-dev-serverlessdeploymentbucket-1x1vf204bz8kb/public/drone.png'
     }
   },
 }
@@ -104,7 +106,7 @@ const getMenuId = async (userId) => {
     console.log(response);
     return response.data;
   } catch (err) {
-    if (err.response.status = 404) {
+    if (err.response.status == 404) {
       // ユーザーのメニューが存在しない場合
       console.log('This user has no menu...');
     } else {
@@ -176,7 +178,7 @@ const getAnswer = (result) => {
   ]
 }
 
-// AWS Lambda から呼び出される処理
+// AWS Lambda から呼び出さhttps://s3-ap-northeast-1.amazonaws.com/lemon-bot-dev-serverlessdeploymentbucket-1x1vf204bz8kb/public/upload_movie.mp4れる処理
 exports.handler = (event, context, callback) => {
   console.log(event);
   const body = JSON.parse(event.body);
@@ -205,7 +207,17 @@ exports.handler = (event, context, callback) => {
           scenario: question.scenario,
           menuId: menuId,
         });
-        await lineClient.replyMessage(lineEvent.replyToken, question.message);
+        if (lineEvent.postback.data === 'mind') {
+          let arrayIndex = Math.floor(Math.random() * msg.length);
+          let reply = {
+            type: 'text',
+            text: msg[arrayIndex],
+          };
+          await lineClient.replyMessage(lineEvent.replyToken, reply);
+          answer = reply;
+        } else {
+          await lineClient.replyMessage(lineEvent.replyToken, question.message);
+        }
         await setMenuOff(lineEvent.source.userId);
         return true;
       }
@@ -216,7 +228,7 @@ exports.handler = (event, context, callback) => {
         console.log('Current state is: ' + JSON.stringify(state));
         if (state.Item.scenario) {
           if (state.Item.scenario === scenarioIdMind) {
-            let arrayIndex = Math.floor(Math.random() * arrayData.length);
+            let arrayIndex = Math.floor(Math.random() * msg.length);
             answer = msg[arrayIndex];
           } else {
             let number = lineEvent.message.text * 1;
